@@ -11,119 +11,120 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', '*');
     next();
-  });
+});
 
-banco.conexao.sync( function(){
+banco.conexao.sync(function () {
     console.log("Banco de dados conectado.");
 })
 
-const PORTA = 3000
-app.listen( PORTA, function(){
-    console.log("Servidor iniciados na porta "+PORTA);
-})
+const PORT = process.env.PORT || 3000; // Usa a porta fornecida pelo Render ou 3000 como fallback
+app.listen(PORT, function () {
+    console.log("Servidor iniciado na porta " + PORT);
+});
 
-app.get("/professor/",async function(req, res) {
+
+app.get("/professor/", async function (req, res) {
     const resultado = await professor.professor.findAll()
     res.send(resultado);
 })
 
-app.get("/materia/",async function(req, res) {
+app.get("/materia/", async function (req, res) {
     const resultado = await materia.materia.findAll()
     res.send(resultado);
 })
 
-app.get("/professor/:id",async function(req, res) {
+app.get("/professor/:id", async function (req, res) {
     const professorSelecionado = await professor.professor.findByPk(
-        req.params.id, { include: { model: materia.materia } } 
+        req.params.id, { include: { model: materia.materia } }
     )
-    if( professorSelecionado == null ){
+    if (professorSelecionado == null) {
         res.status(404).send({})
-    }else{
+    } else {
         res.send(professorSelecionado);
-    } 
+    }
 })
 
-app.get("/materia/:id",async function(req, res) {
+app.get("/materia/:id", async function (req, res) {
     const materiaSelecionada = await materia.materia.findByPk(
-        req.params.id, { include: {model: professor.professor } }
+        req.params.id, { include: { model: professor.professor } }
     )
-    if( materiaSelecionada == null ){
+    if (materiaSelecionada == null) {
         res.status(404).send({})
-    }else{
+    } else {
         res.send(materiaSelecionada);
-    } 
+    }
 })
 
-app.post("/professor/",async function(req,res){
+app.post("/professor/", async function (req, res) {
     const resultado = await professor.professor.create({
-        nome:req.body.nome,
-        titulacao:req.body.titulacao,
+        nome: req.body.nome,
+        titulacao: req.body.titulacao,
         regimeTrabalho: req.body.regimeTrabalho
     })
     res.send(resultado)
 })
 
-app.post("/materia/",async function(req,res){
+app.post("/materia/", async function (req, res) {
     const resultado = await materia.materia.create({
-        nome:req.body.nome,
-        cargaHoraria:req.body.cargaHoraria,
-        professorId:req.body.professorId
+        nome: req.body.nome,
+        cargaHoraria: req.body.cargaHoraria,
+        professorId: req.body.professorId
     })
     res.send(resultado)
 })
 
-app.put("/professor/:id",async function(req,res){
+app.put("/professor/:id", async function (req, res) {
     const resultado = await professor.professor.update({
-        nome:req.body.nome,
-        titulacao:req.body.titulacao,
+        nome: req.body.nome,
+        titulacao: req.body.titulacao,
         regimeTrabalho: req.body.regimeTrabalho
-    },{
-        where:{id: req.params.id}
+    }, {
+        where: { id: req.params.id }
     })
-    if( resultado == 0){
+    if (resultado == 0) {
         res.status(404).send({})
-    }else{
-        res.send( await professor.professor.findByPk(req.params.id))
+    } else {
+        res.send(await professor.professor.findByPk(req.params.id))
     }
 })
 
-app.put("/materia/:id",async function(req,res){
+app.put("/materia/:id", async function (req, res) {
     const resultado = await materia.materia.update({
-        nome:req.body.nome,
-        cargaHoraria:req.body.cargaHoraria,
-        professorId:req.body.professorId
-    },{
-        where:{id: req.params.id}
+        nome: req.body.nome,
+        cargaHoraria: req.body.cargaHoraria,
+        professorId: req.body.professorId
+    }, {
+        where: { id: req.params.id }
     })
-    if( resultado == 0){
+    if (resultado == 0) {
         res.status(404).send({})
-    }else{
-        res.send( await materia.materia.findByPk(req.params.id))
+    } else {
+        res.send(await materia.materia.findByPk(req.params.id))
     }
 })
 
-app.delete("/professor/:id",async function(req,res){
+app.delete("/professor/:id", async function (req, res) {
     const resultado = await professor.professor.destroy({
-        where:{
-            id:req.params.id
+        where: {
+            id: req.params.id
         }
     })
-    if( resultado == 0 ){
+    if (resultado == 0) {
         res.status(404).send({})
-    }else{
+    } else {
         res.status(204).send({})
     }
 })
 
-app.delete("/materia/:id",async function(req,res){
+app.delete("/materia/:id", async function (req, res) {
     const resultado = await materia.materia.destroy({
-        where:{
-            id:req.params.id
+        where: {
+            id: req.params.id
         }
     })
-    if( resultado == 0 ){
+    if (resultado == 0) {
         res.status(404).send({})
-    }else{
+    } else {
         res.status(204).send({})
     }
 })
