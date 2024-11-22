@@ -22,6 +22,9 @@ app.listen(PORT, function () {
     console.log("Servidor iniciado na porta " + PORT);
 });
 
+app.get("/", (req, res) => {
+    res.send("Bem-vindo à API da Escola! Use os endpoints '/professor/' ou '/materia/' para acessar os dados.");
+});
 
 app.get("/professor/", async function (req, res) {
     const resultado = await professor.professor.findAll()
